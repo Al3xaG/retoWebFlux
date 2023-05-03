@@ -4,6 +4,7 @@ package com.retoWebFlux.nttData.service.impl;
 import com.retoWebFlux.nttData.domain.dto.AccountDTO;
 import com.retoWebFlux.nttData.domain.entities.Account;
 import com.retoWebFlux.nttData.domain.entities.Client;
+import com.retoWebFlux.nttData.exceptions.NotFoundException;
 import com.retoWebFlux.nttData.repository.AccountRepository;
 import com.retoWebFlux.nttData.service.AccountService;
 import com.retoWebFlux.nttData.util.MapperAccount;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -38,12 +38,15 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Mono<AccountDTO> getAccount(String id) {
         return accountRepository.findById(Long.valueOf(id))
-                .map(mapperAccount:: accountToAccountDto);
+                .map(mapperAccount:: accountToAccountDto)
+                .switchIfEmpty(Mono.error(new NotFoundException("Cuenta no existe")));
     }
 
     @Override
     public Mono<AccountDTO> updateAccount(AccountDTO accountDTO, String id) {
         return accountRepository.findById(Long.valueOf(id))
+                .map(mapperAccount:: accountToAccountDto)
+                .switchIfEmpty(Mono.error(new NotFoundException("Cuenta no existe")))
                 .flatMap(client -> accountRepository.save(mapperAccount.accountDtoToAccount(accountDTO))
                         .map(mapperAccount::accountToAccountDto));
     }
@@ -51,6 +54,8 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Mono<Void> deleteAccount(String id) {
         return accountRepository.findById(Long.valueOf(id))
+                .map(mapperAccount:: accountToAccountDto)
+                .switchIfEmpty(Mono.error(new NotFoundException("Cuenta no existe")))
                 .flatMap(client -> accountRepository.deleteById(Long.valueOf(id)));
     }
 }

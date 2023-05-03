@@ -10,6 +10,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -25,7 +26,7 @@ public class Transaction implements Persistable<Long> {
     private Long accountId;
 
     //private Account account;
-    private Date date;
+    private LocalDateTime date;
     private String transactionType;
     private Double amount;
     private Double balance;

@@ -26,8 +26,8 @@ public class ClientController {
     }
 
     @GetMapping("/{id}")
-    public Mono<ClientDTO> getClient(@PathVariable String id){
-        return clientService.getClient(id);
+    public ResponseEntity<Mono<ClientDTO>> getClient(@PathVariable String id){
+        return ResponseEntity.ok(clientService.getClient(id));
     }
 
     @GetMapping

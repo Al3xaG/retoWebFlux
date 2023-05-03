@@ -2,6 +2,7 @@ package com.retoWebFlux.nttData.service.impl;
 
 import com.retoWebFlux.nttData.domain.dto.ClientDTO;
 import com.retoWebFlux.nttData.domain.entities.Client;
+import com.retoWebFlux.nttData.exceptions.NotFoundException;
 import com.retoWebFlux.nttData.repository.ClientRepository;
 import com.retoWebFlux.nttData.service.ClientService;
 import com.retoWebFlux.nttData.util.MapperClient;
@@ -30,8 +31,9 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Mono<ClientDTO> getClient(String id) {
-        return clientRepository.findByClientId(Long.valueOf(id))
-                .map(mapperClient:: clientToClientDto);
+
+        return clientRepository.findByClientId(Long.valueOf(id)).map(mapperClient:: clientToClientDto)
+                .switchIfEmpty(Mono.error(new NotFoundException("Cliente no existe")));
     }
 
     @Override
@@ -42,6 +44,8 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public Mono<ClientDTO> updateClient(ClientDTO clientDTO, String id) {
         return clientRepository.findByClientId(Long.valueOf(id))
+                .map(mapperClient:: clientToClientDto)
+                .switchIfEmpty(Mono.error(new NotFoundException("Cliente no existe")))
                 .flatMap(client -> clientRepository.save(mapperClient.clientDtoToClient(clientDTO))
                         .map(mapperClient::clientToClientDto));
     }
@@ -49,6 +53,8 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public Mono<Void> deleteClient(String id) {
         return clientRepository.findByClientId(Long.valueOf(id))
+                .map(mapperClient:: clientToClientDto)
+                .switchIfEmpty(Mono.error(new NotFoundException("Cliente no existe")))
                 .flatMap(client -> clientRepository.deleteById(Long.valueOf(id)));
     }
 }

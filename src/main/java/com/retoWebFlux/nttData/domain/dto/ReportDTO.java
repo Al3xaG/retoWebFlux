@@ -2,6 +2,7 @@ package com.retoWebFlux.nttData.domain.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -11,7 +12,7 @@ import java.util.Date;
 @Builder
 public class ReportDTO {
 
-    private Date date;
+    private LocalDateTime date;
     private String client;
     private String numberAccount;
     private String typeAccount;
